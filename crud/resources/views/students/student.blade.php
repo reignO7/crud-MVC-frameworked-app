@@ -14,4 +14,5 @@
 <p class="blog-post-meta">
 	{{ $student->created_at->toFormattedDateString() }}
 </p>
+
 </div>
