@@ -8,65 +8,55 @@ use App\Student;
 class StudentController extends Controller
 {
 	public function index()
-    {
-    	//$students = Student::latest()->get();
-    	$students = Student::orderBy('created_at', 'desc')->get();
-    	//can be any attribute to order
-
-    	return view('students.home', compact('students'));
+	{
+    	$student = Student::all();
+    	return view('students.index', compact('student'));
     }
 
+    public function show($id)
+    {
+    	$student = Student::find($id);
+    	return view('students.show', compact('student'));
+    }
     public function create()
     {
     	return view('students.create');
     }
 
-    public function store()
-    {	
-    	$this->validate(request(),	[
-    		'firstname' => 'required',
-    		'middlename' => 'required',
-    		'lastname' => 'required',
-    		'course' => 'required'
+    public function store(Request $request)
+    {
+    	$this->validate($request,[
+    		'firstname' => 'required|string|max:25', 
+    		'middlename' => 'required|string|max:25', 
+    		'lastname' => 'required|string|max:25', 
+    		'course' => 'required|string|max:50'
     	]);
-
-    	//METHOD 1
-    	// $student = new Student;
-
-    	// $student->firstname = request('firstname');
-
-    	// $student->middlename = request('middlename');
-
-    	// $student->lastname = request('lastname');
-
-    	// $student->course = request('course');
-
-    	// $student->save();
-
-    	//METHOD 2
-    	// Student::create([
-    	// 	'firstname' => request('firstname'),
-    	// 	'middlename' => request('middlename'),
-    	// 	'lastname' => request('lastname'),
-    	// 	'course' => request('course')
-    	// ]);
-
-    	//METHOD 3
-    	Student::create(request(['firstname','middlename','lastname','course']));
-
-    	return redirect('/');
+    	Student::create($request->all());
+        return redirect()->route('students.index')->with('success','Student registration success');
     }
 
-    public function show($id)
-    {	
+    public function edit($id)
+    {
     	$student = Student::find($id);
-
-    	return view('students.show', compact('student'));
+    	return view('students.edit', compact('student'));
     }
 
-    //or
-    // public function show(Student $student)
-    // {	
-    // 	return view('students.show', compact('student'));
-    // }
+    public function update(Request $request, $id)
+    {
+    	$this->validate($request,[
+    		'firstname' => 'required|string|max:25', 
+    		'middlename' => 'required|string|max:25', 
+    		'lastname' => 'required|string|max:25', 
+    		'course' => 'required|string|max:50'
+    	]);
+    	Student::find($id)->update($request->all());
+    	return redirect()->route('students.index')->with('success', 'Edit successfull');
+    }
+
+    public function destroy($id)
+    {
+    	$student = Student::find($id)->delete();
+    	return redirect()->route('students.index')->with('success','Student unregister success');
+    }
+
 }
